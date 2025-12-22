@@ -96,3 +96,4 @@ class CategoryPieChart extends StatelessWidget {
     );
   }
 }
+

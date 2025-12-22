@@ -137,13 +137,17 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return (data as List)
-            .map((item) => CategorySales(
-                  category: item['category'] ?? 'Unknown',
-                  sales: (item['sales'] ?? 0).toDouble(),
-                ))
+            .map(
+              (item) => CategorySales(
+                category: item['category'] ?? 'Unknown',
+                sales: (item['sales'] ?? 0).toDouble(),
+              ),
+            )
             .toList();
       } else {
-        throw Exception('Failed to load category sales: ${response.statusCode}');
+        throw Exception(
+          'Failed to load category sales: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Error loading category sales: $e');
@@ -160,10 +164,12 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return (data as List)
-            .map((item) => TopProduct(
-                  name: item['name'] ?? 'Unknown',
-                  sales: (item['sales'] ?? 0).toDouble(),
-                ))
+            .map(
+              (item) => TopProduct(
+                name: item['name'] ?? 'Unknown',
+                sales: (item['sales'] ?? 0).toDouble(),
+              ),
+            )
             .toList();
       } else {
         throw Exception('Failed to load top products: ${response.statusCode}');
@@ -183,10 +189,12 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return (data as List)
-            .map((item) => MonthlySales(
-                  period: item['period'] ?? '',
-                  sales: (item['sales'] ?? 0).toDouble(),
-                ))
+            .map(
+              (item) => MonthlySales(
+                period: item['period'] ?? '',
+                sales: (item['sales'] ?? 0).toDouble(),
+              ),
+            )
             .toList();
       } else {
         throw Exception('Failed to load monthly trend: ${response.statusCode}');
@@ -195,4 +203,131 @@ class ApiService {
       throw Exception('Error loading monthly trend: $e');
     }
   }
+
+  // Get Daily Trend (7 days)
+  Future<List<DailySales>> getDailyTrend() async {
+    try {
+      final response = await http
+          .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.dailyTrend}'))
+          .timeout(ApiConfig.timeout);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return (data as List)
+            .map(
+              (item) => DailySales(
+                date: item['date'] ?? '',
+                sales: (item['sales'] ?? 0).toDouble(),
+              ),
+            )
+            .toList();
+      } else {
+        throw Exception('Failed to load daily trend: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error loading daily trend: $e');
+    }
+  }
+
+  // Get Sales by Region
+  Future<List<RegionSales>> getSalesByRegion() async {
+    try {
+      final response = await http
+          .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.salesByRegion}'))
+          .timeout(ApiConfig.timeout);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return (data as List)
+            .map(
+              (item) => RegionSales(
+                region: item['region'] ?? 'Unknown',
+                sales: (item['sales'] ?? 0).toDouble(),
+              ),
+            )
+            .toList();
+      } else {
+        throw Exception('Failed to load region sales: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error loading region sales: $e');
+    }
+  }
+
+  // Get Sales by State
+  Future<List<StateSales>> getSalesByState() async {
+    try {
+      final response = await http
+          .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.salesByState}'))
+          .timeout(ApiConfig.timeout);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return (data as List)
+            .map(
+              (item) => StateSales(
+                state: item['state'] ?? 'Unknown',
+                sales: (item['sales'] ?? 0).toDouble(),
+              ),
+            )
+            .toList();
+      } else {
+        throw Exception('Failed to load state sales: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error loading state sales: $e');
+    }
+  }
+
+  // Get Sales by City
+  Future<List<CitySales>> getSalesByCity() async {
+    try {
+      final response = await http
+          .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.salesByCity}'))
+          .timeout(ApiConfig.timeout);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return (data as List)
+            .map(
+              (item) => CitySales(
+                city: item['city'] ?? 'Unknown',
+                sales: (item['sales'] ?? 0).toDouble(),
+              ),
+            )
+            .toList();
+      } else {
+        throw Exception('Failed to load city sales: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error loading city sales: $e');
+    }
+  }
+
+  // Get Sales by Segment
+  Future<List<SegmentSales>> getSalesBySegment() async {
+    try {
+      final response = await http
+          .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.salesBySegment}'))
+          .timeout(ApiConfig.timeout);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return (data as List)
+            .map(
+              (item) => SegmentSales(
+                segment: item['segment'] ?? 'Unknown',
+                sales: (item['sales'] ?? 0).toDouble(),
+              ),
+            )
+            .toList();
+      } else {
+        throw Exception('Failed to load segment sales: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error loading segment sales: $e');
+    }
+  }
+
+  // Get Dashboard Metrics - Combined data
 }

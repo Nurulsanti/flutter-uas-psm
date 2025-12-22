@@ -5,8 +5,6 @@ import '../providers/theme_provider.dart';
 import '../widgets/sales_trend_chart.dart';
 import '../widgets/region_sales_chart.dart';
 import '../widgets/segment_sales_chart.dart';
-import '../widgets/city_sales_chart.dart';
-import '../widgets/state_sales_chart.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
@@ -91,6 +89,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               // HEADER BANNER
               _buildHeaderBanner(isDark, provider),
               
+              // SUMMARY CARDS
+              Padding(padding: const EdgeInsets.all(12),child: _buildMetricCards(provider, isDark),
+              ),
+              
               // TAB NAVIGATION
               _buildTabBar(isDark),
               
@@ -123,52 +125,33 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           end: Alignment.bottomRight,
           colors: isDark
               ? [
-                  const Color(0xFF6A1B9A),
-                  const Color(0xFF8E24AA),
-                  const Color(0xFF4A148C),
+                  const Color(0xFF7E57C2),
+                  const Color(0xFF5E35B1),
                 ]
               : [
                   const Color(0xFF7E57C2),
-                  const Color(0xFFAB47BC),
-                  const Color(0xFF9C27B0),
+                  const Color(0xFF9575CD),
                 ],
         ),
       ),
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.analytics,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Dashboard Analytics',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
+                  const Text(
+                    'Dashboard Analytics',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                   Row(
                     children: [
@@ -190,31 +173,12 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 ],
               ),
               const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.store,
-                      color: Colors.white.withOpacity(0.9),
-                      size: 14,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Retail Business Intelligence',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white.withOpacity(0.95),
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ],
+              Text(
+                'Retail Business Intelligence',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ],
@@ -226,59 +190,44 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
   Widget _buildTabBar(bool isDark) {
     return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+      child: TabBar(
+        controller: _tabController,
+        isScrollable: true,
+        indicatorColor: const Color(0xFF7E57C2),
+        indicatorWeight: 3,
+        labelColor: const Color(0xFF7E57C2),
+        unselectedLabelColor: isDark ? Colors.white60 : Colors.black54,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        tabs: const [
+          Tab(
+            icon: Icon(Icons.dashboard),
+            text: 'Overview',
+          ),
+          Tab(
+            icon: Icon(Icons.trending_up),
+            text: 'Sales Trend',
+          ),
+          Tab(
+            icon: Icon(Icons.public),
+            text: 'Regional Analysis',
+          ),
+          Tab(
+            icon: Icon(Icons.inventory),
+            text: 'Product Analysis',
+          ),
+          Tab(
+            icon: Icon(Icons.people),
+            text: 'Customer Analysis',
           ),
         ],
-      ),
-      child: Center(
-        child: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          indicatorColor: const Color(0xFF9C27B0),
-          indicatorWeight: 3.5,
-          indicatorPadding: const EdgeInsets.symmetric(horizontal: 8),
-          labelColor: const Color(0xFF9C27B0),
-          unselectedLabelColor: isDark ? Colors.white54 : Colors.black45,
-          labelStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.3,
-          ),
-          unselectedLabelStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          tabAlignment: TabAlignment.center,
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.dashboard),
-              text: 'Overview',
-            ),
-            Tab(
-              icon: Icon(Icons.trending_up),
-              text: 'Sales Trend',
-            ),
-            Tab(
-              icon: Icon(Icons.public),
-              text: 'Regional Analysis',
-            ),
-            Tab(
-              icon: Icon(Icons.inventory),
-              text: 'Product Analysis',
-            ),
-            Tab(
-              icon: Icon(Icons.people),
-              text: 'Customer Analysis',
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -289,14 +238,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       color: const Color(0xFF7E57C2),
       onRefresh: () => provider.fetchDashboardData(),
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // METRIC CARDS
-            _buildMetricCards(provider, isDark),
-            const SizedBox(height: 24),
-            
             // Row with 2 pie charts
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -405,16 +351,6 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 isDark: isDark,
               ),
             const SizedBox(height: 24),
-            CitySalesChart(
-              cityData: provider.cityData,
-              isDark: isDark,
-            ),
-            const SizedBox(height: 24),
-            StateSalesChart(
-              stateData: provider.stateData,
-              isDark: isDark,
-            ),
-            const SizedBox(height: 24),
             // Additional regional metrics
             _buildRegionMetrics(provider, isDark),
           ],
@@ -513,84 +449,55 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
     final summary = provider.summary!;
     final totalSales = summary['total_sales'] ?? 0.0;
-    final totalProfit = totalSales * 0.25; // Estimasi profit 25%
-    final totalTransactions = summary['total_transactions'] ?? 0;
     final totalCategories = summary['total_categories'] ?? 0;
+    final totalTransactions = summary['total_transactions'] ?? 0;
     final totalStates = summary['total_states'] ?? 0;
-    // Hitung rata-rata: total sales / jumlah transaksi
-    final avgOrderValue = totalTransactions > 0 ? totalSales / totalTransactions : 0.0;
 
-    return Column(
+    return Row(
       children: [
-        // Baris 1: Revenue, Profit, Orders
-        Row(
-          children: [
-            Expanded(
-              child: _buildMetricCard(
+        Expanded(
+          child: Column(
+            children: [
+              _buildMetricCard(
                 'Total Revenue',
                 _formatCurrency(totalSales),
-                Icons.account_balance_wallet,
+                Icons.attach_money,
                 const Color(0xFF4CAF50),
                 isDark,
               ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _buildMetricCard(
-                'Total Profit',
-                _formatCurrency(totalProfit),
-                Icons.trending_up,
-                const Color(0xFF2196F3),
-                isDark,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _buildMetricCard(
-                'Avg Order Value',
-                _formatCurrency(avgOrderValue),
+              const SizedBox(height: 12),
+              _buildMetricCard(
+                'Orders',
+                _formatNumber(totalTransactions),
                 Icons.shopping_cart,
                 const Color(0xFFFF9800),
                 isDark,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        const SizedBox(height: 14),
-        // Baris 2: Total Region, Products, Customers
-        Row(
-          children: [
-            Expanded(
-              child: _buildMetricCard(
-                'Total Region',
-                '4',
-                Icons.public,
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            children: [
+              _buildMetricCard(
+                'Categories',
+                totalCategories.toString(),
+                Icons.category,
+                const Color(0xFF2196F3),
+                isDark,
+              ),
+              const SizedBox(height: 12),
+              _buildMetricCard(
+                'States',
+                totalStates.toString(),
+                Icons.location_on,
                 const Color(0xFF9C27B0),
                 isDark,
               ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _buildMetricCard(
-                'Total Products',
-                '1,870',
-                Icons.category,
-                const Color(0xFFE91E63),
-                isDark,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _buildMetricCard(
-                'Total Customers',
-                '4',
-                Icons.group,
-                const Color(0xFF00BCD4),
-                isDark,
-              ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        )
       ],
     );
   }
@@ -603,36 +510,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     bool isDark,
   ) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  const Color(0xFF2C2C2C),
-                  const Color(0xFF1E1E1E),
-                ]
-              : [
-                  Colors.white,
-                  color.withOpacity(0.05),
-                ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? color.withOpacity(0.2) : color.withOpacity(0.1),
-          width: 1.5,
-        ),
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.15),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: -4,
-          ),
-          BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05),
-            blurRadius: 15,
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
@@ -640,47 +525,28 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            height: 52,
-            width: 52,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  color.withOpacity(0.8),
-                  color,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.4),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+          Container(height: 40,width: 40,padding: const EdgeInsets.all(8),decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.white, size: 26),
+            child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Text(
             label,
             style: TextStyle(
               fontSize: 13,
-              color: isDark ? Colors.white60 : Colors.black45,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
+              color: isDark ? Colors.white70 : Colors.black54,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             value,
             style: TextStyle(
-              fontSize: 26,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
               color: isDark ? Colors.white : Colors.black87,
-              letterSpacing: -0.5,
             ),
           ),
         ],
@@ -699,36 +565,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     );
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  const Color(0xFF2C2C2C),
-                  const Color(0xFF1E1E1E),
-                ]
-              : [
-                  Colors.white,
-                  const Color(0xFFFAFAFA),
-                ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
-          width: 1,
-        ),
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2196F3).withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: -4,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
-            blurRadius: 15,
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
@@ -738,35 +582,18 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF2196F3).withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.pie_chart,
-                  color: Colors.white,
-                  size: 22,
-                ),
+              Icon(
+                Icons.category,
+                color: const Color(0xFF2196F3),
+                size: 24,
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
               Text(
                 'Sales by Category',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: isDark ? Colors.white : Colors.black87,
-                  letterSpacing: 0.3,
                 ),
               ),
             ],
@@ -1216,4 +1043,3 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     }
   }
 }
-
