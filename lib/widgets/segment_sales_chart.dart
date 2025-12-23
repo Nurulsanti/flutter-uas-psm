@@ -73,14 +73,18 @@ class SegmentSalesChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Penjualan per Segmen Pelanggan',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : Colors.black87,
+              Flexible(
+                child: Text(
+                  'Penjualan per Segmen Pelanggan',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -167,10 +171,11 @@ class SegmentSalesChart extends StatelessWidget {
                 // Legend
                 Expanded(
                   flex: 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: sortedData.map((segment) {
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: sortedData.map((segment) {
                       final segmentName = segment['segment'] as String;
                       final sales = (segment['total_sales'] as num).toDouble();
                       final percentage = (sales / totalSales) * 100;
@@ -202,6 +207,7 @@ class SegmentSalesChart extends StatelessWidget {
                                           ? Colors.white
                                           : Colors.black87,
                                     ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
@@ -212,6 +218,7 @@ class SegmentSalesChart extends StatelessWidget {
                                           ? Colors.white60
                                           : Colors.black54,
                                     ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -220,6 +227,7 @@ class SegmentSalesChart extends StatelessWidget {
                         ),
                       );
                     }).toList(),
+                    ),
                   ),
                 ),
               ],
@@ -235,8 +243,10 @@ class SegmentSalesChart extends StatelessWidget {
                   : Colors.grey.shade50,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              alignment: WrapAlignment.spaceAround,
               children: sortedData.map((segment) {
                 final segmentName = segment['segment'] as String;
                 final sales = (segment['total_sales'] as num).toDouble();

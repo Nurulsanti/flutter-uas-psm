@@ -235,19 +235,44 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 return RefreshIndicator(
                   onRefresh: () => provider.fetchProducts(),
                   color: const Color(0xFF6750A4),
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 5,
-                          childAspectRatio: 0.7,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Responsive grid columns based on screen width
+                      int crossAxisCount;
+                      double childAspectRatio;
+                      
+                      if (constraints.maxWidth < 600) {
+                        // Mobile: 2 columns
+                        crossAxisCount = 2;
+                        childAspectRatio = 0.75;
+                      } else if (constraints.maxWidth < 900) {
+                        // Tablet: 3 columns
+                        crossAxisCount = 3;
+                        childAspectRatio = 0.72;
+                      } else if (constraints.maxWidth < 1200) {
+                        // Small desktop: 4 columns
+                        crossAxisCount = 4;
+                        childAspectRatio = 0.7;
+                      } else {
+                        // Large desktop: 5 columns
+                        crossAxisCount = 5;
+                        childAspectRatio = 0.7;
+                      }
+                      
+                      return GridView.builder(
+                        padding: const EdgeInsets.all(16),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          childAspectRatio: childAspectRatio,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
                         ),
-                    itemCount: provider.products.length,
+                        itemCount: provider.products.length,
                     itemBuilder: (context, index) {
-                      final product = provider.products[index];
-                      return _buildProductCard(product, isDark);
+                        final product = provider.products[index];
+                        return _buildProductCard(product, isDark);
+                      },
+                    );
                     },
                   ),
                 );
@@ -439,37 +464,46 @@ class _ProductListScreenState extends State<ProductListScreen> {
             Expanded(
               flex: 4,
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Product Name
-                    Text(
-                      product.productName,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white : Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 1),
+                    // Product Name and Category - Flexible to prevent overflow
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Product Name
+                          Text(
+                            product.productName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? Colors.white : Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
 
-                    // Category
-                    Text(
-                      '${product.category} - ${product.subCategory}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          // Category
+                          Text(
+                            '${product.category} - ${product.subCategory}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: isDark ? Colors.grey[400] : Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 4),
 
-                    // Buy Button
+                    // Buy Button - Fixed height at bottom
                     SizedBox(
                       width: double.infinity,
                       height: 24,

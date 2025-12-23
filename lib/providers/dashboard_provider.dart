@@ -41,6 +41,8 @@ class DashboardProvider with ChangeNotifier {
       final regions = await _apiService.getSalesByRegion();
       final monthlySales = await _apiService.getMonthlyTrend();
       final segments = await _apiService.getSalesBySegment();
+      final cities = await _apiService.getSalesByCity();
+      final states = await _apiService.getSalesByState();
 
       // Get total products count from products API
       final productsData = await _apiService.getProducts(page: 1, perPage: 1);
@@ -51,9 +53,10 @@ class DashboardProvider with ChangeNotifier {
         'total_categories': categories.length,
         'total_transactions': dashboardData.totalOrders,
         'total_products': totalProducts,
-        'total_states': 0,
+        'total_states': states.length,
         'total_regions': regions.length,
         'avg_transaction_value': dashboardData.avgOrderValue,
+        'total_customers': dashboardData.totalCustomers,
       };
 
       _categoryData = categories
@@ -76,8 +79,13 @@ class DashboardProvider with ChangeNotifier {
           .map((e) => {'segment': e.segment, 'total_sales': e.sales})
           .toList();
 
-      _cityData = [];
-      _stateData = [];
+      _cityData = cities
+          .map((e) => {'city': e.city, 'total_sales': e.sales})
+          .toList();
+
+      _stateData = states
+          .map((e) => {'state': e.state, 'total_sales': e.sales})
+          .toList();
 
       _isLoading = false;
       notifyListeners();

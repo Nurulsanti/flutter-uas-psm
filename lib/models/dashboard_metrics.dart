@@ -3,12 +3,14 @@ class DashboardMetrics {
   final double totalProfit;
   final int totalOrders;
   final double avgOrderValue;
+  final int totalCustomers;
 
   DashboardMetrics({
     required this.totalSales,
     required this.totalProfit,
     required this.totalOrders,
     required this.avgOrderValue,
+    required this.totalCustomers,
   });
 
   factory DashboardMetrics.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class DashboardMetrics {
       totalProfit: (json['total_profit'] ?? 0).toDouble(),
       totalOrders: json['total_orders'] ?? 0,
       avgOrderValue: (json['avg_order_value'] ?? 0).toDouble(),
+      totalCustomers: json['total_customers'] ?? 0,
     );
   }
 }

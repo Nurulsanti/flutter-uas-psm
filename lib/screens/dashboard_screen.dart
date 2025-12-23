@@ -297,26 +297,50 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             _buildMetricCards(provider, isDark),
             const SizedBox(height: 24),
             
-            // Row with 2 pie charts
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Sales by Category
-                if (provider.categoryData.isNotEmpty)
-                  Expanded(
-                    child: _buildCategoryPieChart(provider, isDark),
-                  ),
-                if (provider.categoryData.isNotEmpty && provider.segmentData.isNotEmpty)
-                  const SizedBox(width: 16),
-                // Sales by Segment
-                if (provider.segmentData.isNotEmpty)
-                  Expanded(
-                    child: SegmentSalesChart(
-                      segmentData: provider.segmentData,
-                      isDark: isDark,
-                    ),
-                  ),
-              ],
+            // Row with 2 pie charts - Responsive layout
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Use Column layout on smaller screens
+                if (constraints.maxWidth < 900) {
+                  return Column(
+                    children: [
+                      // Sales by Category
+                      if (provider.categoryData.isNotEmpty)
+                        _buildCategoryPieChart(provider, isDark),
+                      if (provider.categoryData.isNotEmpty && provider.segmentData.isNotEmpty)
+                        const SizedBox(height: 24),
+                      // Sales by Segment
+                      if (provider.segmentData.isNotEmpty)
+                        SegmentSalesChart(
+                          segmentData: provider.segmentData,
+                          isDark: isDark,
+                        ),
+                    ],
+                  );
+                }
+                
+                // Use Row layout on larger screens
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Sales by Category
+                    if (provider.categoryData.isNotEmpty)
+                      Expanded(
+                        child: _buildCategoryPieChart(provider, isDark),
+                      ),
+                    if (provider.categoryData.isNotEmpty && provider.segmentData.isNotEmpty)
+                      const SizedBox(width: 16),
+                    // Sales by Segment
+                    if (provider.segmentData.isNotEmpty)
+                      Expanded(
+                        child: SegmentSalesChart(
+                          segmentData: provider.segmentData,
+                          isDark: isDark,
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 24),
             
@@ -517,6 +541,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final totalTransactions = summary['total_transactions'] ?? 0;
     final totalCategories = summary['total_categories'] ?? 0;
     final totalStates = summary['total_states'] ?? 0;
+    final totalCustomers = summary['total_customers'] ?? 0;
     // Hitung rata-rata: total sales / jumlah transaksi
     final avgOrderValue = totalTransactions > 0 ? totalSales / totalTransactions : 0.0;
 
@@ -583,7 +608,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             Expanded(
               child: _buildMetricCard(
                 'Total Customers',
-                '4',
+                '$totalCustomers',
                 Icons.group,
                 const Color(0xFF00BCD4),
                 isDark,
@@ -760,13 +785,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 ),
               ),
               const SizedBox(width: 14),
-              Text(
-                'Sales by Category',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : Colors.black87,
-                  letterSpacing: 0.3,
+              Flexible(
+                child: Text(
+                  'Sales by Category',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
+                    letterSpacing: 0.3,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
