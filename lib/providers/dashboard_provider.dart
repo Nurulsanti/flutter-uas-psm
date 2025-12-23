@@ -85,6 +85,7 @@ class DashboardProvider with ChangeNotifier {
 
       _stateData = states
           .map((e) => {'state': e.state, 'total_sales': e.sales})
+          .take(5)
           .toList();
 
       _isLoading = false;

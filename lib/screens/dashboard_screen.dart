@@ -176,11 +176,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         icon: const Icon(Icons.refresh, color: Colors.white),
                         onPressed: () => provider.fetchDashboardData(),
                       ),
+                      const SizedBox(width: 4),
                       IconButton(
                         icon: Icon(
                           isDark ? Icons.light_mode : Icons.dark_mode,
                           color: Colors.white,
                         ),
+                        padding: const EdgeInsets.only(right: 8),
                         onPressed: () {
                           context.read<ThemeProvider>().toggleTheme();
                         },
@@ -545,76 +547,55 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     // Hitung rata-rata: total sales / jumlah transaksi
     final avgOrderValue = totalTransactions > 0 ? totalSales / totalTransactions : 0.0;
 
-    return Column(
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: 14,
+      mainAxisSpacing: 14,
+      childAspectRatio: 1.35,
       children: [
-        // Baris 1: Revenue, Profit, Orders
-        Row(
-          children: [
-            Expanded(
-              child: _buildMetricCard(
-                'Total Revenue',
-                _formatCurrency(totalSales),
-                Icons.account_balance_wallet,
-                const Color(0xFF4CAF50),
-                isDark,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _buildMetricCard(
-                'Total Profit',
-                _formatCurrency(totalProfit),
-                Icons.trending_up,
-                const Color(0xFF2196F3),
-                isDark,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _buildMetricCard(
-                'Avg Order Value',
-                _formatCurrency(avgOrderValue),
-                Icons.shopping_cart,
-                const Color(0xFFFF9800),
-                isDark,
-              ),
-            ),
-          ],
+        _buildMetricCard(
+          'Total Revenue',
+          _formatCurrency(totalSales),
+          Icons.account_balance_wallet,
+          const Color(0xFF4CAF50),
+          isDark,
         ),
-        const SizedBox(height: 14),
-        // Baris 2: Total Region, Products, Customers
-        Row(
-          children: [
-            Expanded(
-              child: _buildMetricCard(
-                'Total Region',
-                '4',
-                Icons.public,
-                const Color(0xFF9C27B0),
-                isDark,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _buildMetricCard(
-                'Total Products',
-                '1,870',
-                Icons.category,
-                const Color(0xFFE91E63),
-                isDark,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: _buildMetricCard(
-                'Total Customers',
-                '$totalCustomers',
-                Icons.group,
-                const Color(0xFF00BCD4),
-                isDark,
-              ),
-            ),
-          ],
+        _buildMetricCard(
+          'Total Profit',
+          _formatCurrency(totalProfit),
+          Icons.trending_up,
+          const Color(0xFF2196F3),
+          isDark,
+        ),
+        _buildMetricCard(
+          'Avg Order Value',
+          _formatCurrency(avgOrderValue),
+          Icons.shopping_cart,
+          const Color(0xFFFF9800),
+          isDark,
+        ),
+        _buildMetricCard(
+          'Total Region',
+          '4',
+          Icons.public,
+          const Color(0xFF9C27B0),
+          isDark,
+        ),
+        _buildMetricCard(
+          'Total Products',
+          '1,870',
+          Icons.category,
+          const Color(0xFFE91E63),
+          isDark,
+        ),
+        _buildMetricCard(
+          'Total Customers',
+          '$totalCustomers',
+          Icons.group,
+          const Color(0xFF00BCD4),
+          isDark,
         ),
       ],
     );

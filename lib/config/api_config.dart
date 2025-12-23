@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String baseUrl = 'http://127.0.0.1:8000/api';
+  static const String baseUrl = 'https://backend-psm-uas-production.up.railway.app/api';
   static const Duration timeout = Duration(seconds: 30);
 
   // Endpoint constants
