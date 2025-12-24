@@ -35,6 +35,246 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     });
   }
 
+  Widget _buildMetricCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    bool isDark,
+    {double? width}
+  ) {
+    return Container(
+      width: width ?? 160,
+      constraints: const BoxConstraints(minWidth: 140, maxWidth: 220),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [const Color(0xFF2C2C2C), const Color(0xFF1E1E1E)]
+              : [Colors.white, color.withOpacity(0.05)],
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: isDark ? color.withOpacity(0.18) : color.withOpacity(0.10),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.12),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+            spreadRadius: -2,
+          ),
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.22)
+                : Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 44,
+            width: 44,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [color.withOpacity(0.8), color],
+              ),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.32),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 22),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? Colors.white60 : Colors.black45,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 6),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryPieChart(DashboardProvider provider, bool isDark) {
+    if (provider.categoryData.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final totalSales = provider.categoryData.fold<double>(
+      0,
+      (sum, item) => sum + (item['total_sales'] as num).toDouble(),
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.category,
+                color: const Color(0xFF2196F3),
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Sales by Category',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 250,
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 2,
+                centerSpaceRadius: 50,
+                sections: provider.categoryData.map((category) {
+                  final categoryName = category['category'] as String;
+                  final sales = (category['total_sales'] as num).toDouble();
+                  final percentage = totalSales > 0 ? (sales / totalSales) * 100 : 0.0;
+
+                  Color color;
+                  switch (categoryName.toLowerCase()) {
+                    case 'technology':
+                      color = const Color(0xFFF44336);
+                      break;
+                    case 'furniture':
+                      color = const Color(0xFF2196F3);
+                      break;
+                    case 'office supplies':
+                      color = const Color(0xFF4CAF50);
+                      break;
+                    default:
+                      color = const Color(0xFF9C27B0);
+                  }
+
+                  return PieChartSectionData(
+                    color: color,
+                    value: sales,
+                    title: '${percentage.toStringAsFixed(1)}%',
+                    radius: 80,
+                    titleStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          ...provider.categoryData.map((category) {
+            final categoryName = category['category'] as String;
+            final sales = (category['total_sales'] as num).toDouble();
+
+            Color color;
+            switch (categoryName.toLowerCase()) {
+              case 'technology':
+                color = const Color(0xFFF44336);
+                break;
+              case 'furniture':
+                color = const Color(0xFF2196F3);
+                break;
+              case 'office supplies':
+                color = const Color(0xFF4CAF50);
+                break;
+              default:
+                color = const Color(0xFF9C27B0);
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      categoryName,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    _formatCurrency(sales),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -90,10 +330,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             children: [
               // HEADER BANNER
               _buildHeaderBanner(isDark, provider),
-              
+
               // TAB NAVIGATION
               _buildTabBar(isDark),
-              
+
               // TAB CONTENT
               Expanded(
                 child: TabBarView(
@@ -172,20 +412,26 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   ),
                   Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.refresh, color: Colors.white),
-                        onPressed: () => provider.fetchDashboardData(),
-                      ),
-                      const SizedBox(width: 4),
-                      IconButton(
-                        icon: Icon(
-                          isDark ? Icons.light_mode : Icons.dark_mode,
-                          color: Colors.white,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        child: Material(
+                          color: Colors.white.withOpacity(0.18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: () => context.read<ThemeProvider>().toggleTheme(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                isDark ? Icons.light_mode : Icons.dark_mode,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
                         ),
-                        padding: const EdgeInsets.only(right: 8),
-                        onPressed: () {
-                          context.read<ThemeProvider>().toggleTheme();
-                        },
                       ),
                     ],
                   ),
@@ -193,7 +439,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               ),
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(16),
@@ -259,26 +508,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           padding: const EdgeInsets.symmetric(horizontal: 24),
           tabAlignment: TabAlignment.center,
           tabs: const [
-            Tab(
-              icon: Icon(Icons.dashboard),
-              text: 'Overview',
-            ),
-            Tab(
-              icon: Icon(Icons.trending_up),
-              text: 'Sales Trend',
-            ),
-            Tab(
-              icon: Icon(Icons.public),
-              text: 'Regional Analysis',
-            ),
-            Tab(
-              icon: Icon(Icons.inventory),
-              text: 'Product Analysis',
-            ),
-            Tab(
-              icon: Icon(Icons.people),
-              text: 'Customer Analysis',
-            ),
+            Tab(icon: Icon(Icons.dashboard), text: 'Overview'),
+            Tab(icon: Icon(Icons.trending_up), text: 'Sales Trend'),
+            Tab(icon: Icon(Icons.public), text: 'Regional Analysis'),
+            Tab(icon: Icon(Icons.inventory), text: 'Product Analysis'),
+            Tab(icon: Icon(Icons.people), text: 'Customer Analysis'),
           ],
         ),
       ),
@@ -298,7 +532,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             // METRIC CARDS
             _buildMetricCards(provider, isDark),
             const SizedBox(height: 24),
-            
+
             // Row with 2 pie charts - Responsive layout
             LayoutBuilder(
               builder: (context, constraints) {
@@ -309,7 +543,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       // Sales by Category
                       if (provider.categoryData.isNotEmpty)
                         _buildCategoryPieChart(provider, isDark),
-                      if (provider.categoryData.isNotEmpty && provider.segmentData.isNotEmpty)
+                      if (provider.categoryData.isNotEmpty &&
+                          provider.segmentData.isNotEmpty)
                         const SizedBox(height: 24),
                       // Sales by Segment
                       if (provider.segmentData.isNotEmpty)
@@ -320,17 +555,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     ],
                   );
                 }
-                
+
                 // Use Row layout on larger screens
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Sales by Category
                     if (provider.categoryData.isNotEmpty)
-                      Expanded(
-                        child: _buildCategoryPieChart(provider, isDark),
-                      ),
-                    if (provider.categoryData.isNotEmpty && provider.segmentData.isNotEmpty)
+                      Expanded(child: _buildCategoryPieChart(provider, isDark)),
+                    if (provider.categoryData.isNotEmpty &&
+                        provider.segmentData.isNotEmpty)
                       const SizedBox(width: 16),
                     // Sales by Segment
                     if (provider.segmentData.isNotEmpty)
@@ -345,13 +579,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               },
             ),
             const SizedBox(height: 24),
-            
+
             // Sales by Region
             if (provider.regionData.isNotEmpty)
-              RegionSalesChart(
-                regionData: provider.regionData,
-                isDark: isDark,
-              ),
+              RegionSalesChart(regionData: provider.regionData, isDark: isDark),
           ],
         ),
       ),
@@ -387,10 +618,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             ),
             const SizedBox(height: 24),
             if (provider.salesTrend.isNotEmpty)
-              SalesTrendChart(
-                salesData: provider.salesTrend,
-                isDark: isDark,
-              ),
+              SalesTrendChart(salesData: provider.salesTrend, isDark: isDark),
           ],
         ),
       ),
@@ -426,20 +654,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             ),
             const SizedBox(height: 24),
             if (provider.regionData.isNotEmpty)
-              RegionSalesChart(
-                regionData: provider.regionData,
-                isDark: isDark,
-              ),
+              RegionSalesChart(regionData: provider.regionData, isDark: isDark),
             const SizedBox(height: 24),
-            CitySalesChart(
-              cityData: provider.cityData,
-              isDark: isDark,
-            ),
+            CitySalesChart(cityData: provider.cityData, isDark: isDark),
             const SizedBox(height: 24),
-            StateSalesChart(
-              stateData: provider.stateData,
-              isDark: isDark,
-            ),
+            StateSalesChart(stateData: provider.stateData, isDark: isDark),
             const SizedBox(height: 24),
             // Additional regional metrics
             _buildRegionMetrics(provider, isDark),
@@ -541,344 +760,68 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final totalSales = summary['total_sales'] ?? 0.0;
     final totalProfit = totalSales * 0.25; // Estimasi profit 25%
     final totalTransactions = summary['total_transactions'] ?? 0;
-    final totalCategories = summary['total_categories'] ?? 0;
-    final totalStates = summary['total_states'] ?? 0;
     final totalCustomers = summary['total_customers'] ?? 0;
     // Hitung rata-rata: total sales / jumlah transaksi
     final avgOrderValue = totalTransactions > 0 ? totalSales / totalTransactions : 0.0;
 
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 14,
-      mainAxisSpacing: 14,
-      childAspectRatio: 1.35,
-      children: [
-        _buildMetricCard(
-          'Total Revenue',
-          _formatCurrency(totalSales),
-          Icons.account_balance_wallet,
-          const Color(0xFF4CAF50),
-          isDark,
-        ),
-        _buildMetricCard(
-          'Total Profit',
-          _formatCurrency(totalProfit),
-          Icons.trending_up,
-          const Color(0xFF2196F3),
-          isDark,
-        ),
-        _buildMetricCard(
-          'Avg Order Value',
-          _formatCurrency(avgOrderValue),
-          Icons.shopping_cart,
-          const Color(0xFFFF9800),
-          isDark,
-        ),
-        _buildMetricCard(
-          'Total Region',
-          '4',
-          Icons.public,
-          const Color(0xFF9C27B0),
-          isDark,
-        ),
-        _buildMetricCard(
-          'Total Products',
-          '1,870',
-          Icons.category,
-          const Color(0xFFE91E63),
-          isDark,
-        ),
-        _buildMetricCard(
-          'Total Customers',
-          '$totalCustomers',
-          Icons.group,
-          const Color(0xFF00BCD4),
-          isDark,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMetricCard(
-    String label,
-    String value,
-    IconData icon,
-    Color color,
-    bool isDark,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  const Color(0xFF2C2C2C),
-                  const Color(0xFF1E1E1E),
-                ]
-              : [
-                  Colors.white,
-                  color.withOpacity(0.05),
-                ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? color.withOpacity(0.2) : color.withOpacity(0.1),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.15),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: -4,
-          ),
-          BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 52,
-            width: 52,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  color.withOpacity(0.8),
-                  color,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.4),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double cardWidth = (constraints.maxWidth - 16) / 2;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            _buildMetricCard(
+              'Total Revenue',
+              _formatCurrency(totalSales),
+              Icons.account_balance_wallet,
+              const Color(0xFF4CAF50),
+              isDark,
+              width: cardWidth,
             ),
-            child: Icon(icon, color: Colors.white, size: 26),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              color: isDark ? Colors.white60 : Colors.black45,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
+            _buildMetricCard(
+              'Total Profit',
+              _formatCurrency(totalProfit),
+              Icons.trending_up,
+              const Color(0xFF2196F3),
+              isDark,
+              width: cardWidth,
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : Colors.black87,
-              letterSpacing: -0.5,
+            _buildMetricCard(
+              'Avg Order Value',
+              _formatCurrency(avgOrderValue),
+              Icons.shopping_cart,
+              const Color(0xFFFF9800),
+              isDark,
+              width: cardWidth,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryPieChart(DashboardProvider provider, bool isDark) {
-    if (provider.categoryData.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final totalSales = provider.categoryData.fold<double>(
-      0,
-      (sum, item) => sum + (item['total_sales'] as num).toDouble(),
-    );
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  const Color(0xFF2C2C2C),
-                  const Color(0xFF1E1E1E),
-                ]
-              : [
-                  Colors.white,
-                  const Color(0xFFFAFAFA),
-                ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF2196F3).withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: -4,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF2196F3).withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.pie_chart,
-                  color: Colors.white,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Flexible(
-                child: Text(
-                  'Sales by Category',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
-                    letterSpacing: 0.3,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: 250,
-            child: PieChart(
-              PieChartData(
-                sectionsSpace: 2,
-                centerSpaceRadius: 50,
-                sections: provider.categoryData.map((category) {
-                  final categoryName = category['category'] as String;
-                  final sales = (category['total_sales'] as num).toDouble();
-                  final percentage = (sales / totalSales) * 100;
-
-                  Color color;
-                  switch (categoryName.toLowerCase()) {
-                    case 'technology':
-                      color = const Color(0xFFF44336);
-                      break;
-                    case 'furniture':
-                      color = const Color(0xFF2196F3);
-                      break;
-                    case 'office supplies':
-                      color = const Color(0xFF4CAF50);
-                      break;
-                    default:
-                      color = const Color(0xFF9C27B0);
-                  }
-
-                  return PieChartSectionData(
-                    color: color,
-                    value: sales,
-                    title: '${percentage.toStringAsFixed(1)}%',
-                    radius: 80,
-                    titleStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  );
-                }).toList(),
-              ),
+            _buildMetricCard(
+              'Total Region',
+              '4',
+              Icons.public,
+              const Color(0xFF9C27B0),
+              isDark,
+              width: cardWidth,
             ),
-          ),
-          const SizedBox(height: 20),
-          ...provider.categoryData.map((category) {
-            final categoryName = category['category'] as String;
-            final sales = (category['total_sales'] as num).toDouble();
-
-            Color color;
-            switch (categoryName.toLowerCase()) {
-              case 'technology':
-                color = const Color(0xFFF44336);
-                break;
-              case 'furniture':
-                color = const Color(0xFF2196F3);
-                break;
-              case 'office supplies':
-                color = const Color(0xFF4CAF50);
-                break;
-              default:
-                color = const Color(0xFF9C27B0);
-            }
-
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                children: [
-                  Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      categoryName,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: isDark ? Colors.white : Colors.black87,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    _formatCurrency(sales),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-        ],
-      ),
+            _buildMetricCard(
+              'Total Products',
+              '1,870',
+              Icons.category,
+              const Color(0xFFE91E63),
+              isDark,
+              width: cardWidth,
+            ),
+            _buildMetricCard(
+              'Total Customers',
+              '$totalCustomers',
+              Icons.group,
+              const Color(0xFF00BCD4),
+              isDark,
+              width: cardWidth,
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -889,10 +832,9 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
     final maxSales = provider.topProducts.fold<double>(
       0,
-      (max, item) =>
-          (item['total_quantity'] as num).toDouble() > max
-              ? (item['total_quantity'] as num).toDouble()
-              : max,
+      (max, item) => (item['total_quantity'] as num).toDouble() > max
+          ? (item['total_quantity'] as num).toDouble()
+          : max,
     );
 
     return Container(
@@ -913,11 +855,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.star,
-                color: Color(0xFFFF9800),
-                size: 24,
-              ),
+              const Icon(Icons.star, color: Color(0xFFFF9800), size: 24),
               const SizedBox(width: 12),
               Text(
                 'Top 10 Products',
@@ -1000,7 +938,9 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     );
 
     final sortedRegions = List<Map<String, dynamic>>.from(provider.regionData)
-      ..sort((a, b) => (b['total_sales'] as num).compareTo(a['total_sales'] as num));
+      ..sort(
+        (a, b) => (b['total_sales'] as num).compareTo(a['total_sales'] as num),
+      );
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -1095,7 +1035,9 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     );
 
     final sortedSegments = List<Map<String, dynamic>>.from(provider.segmentData)
-      ..sort((a, b) => (b['total_sales'] as num).compareTo(a['total_sales'] as num));
+      ..sort(
+        (a, b) => (b['total_sales'] as num).compareTo(a['total_sales'] as num),
+      );
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -1225,4 +1167,3 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     }
   }
 }
-
