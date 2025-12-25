@@ -1,16 +1,42 @@
-# mk_mobile
+# Flutter UAS PSM (Mobile App)
 
-A new Flutter project.
+Proyek ini merupakan **aplikasi mobile berbasis Flutter** yang berfungsi sebagai **antarmuka (frontend)** untuk menampilkan dan mengelola data Business Intelligence. Aplikasi ini terhubung ke **API Backend Laravel** untuk pengelolaan produk, transaksi, serta visualisasi statistik penjualan melalui dashboard.
 
-## Getting Started
+## Fitur Utama
+  **Dashboard Monitoring**  
+  Menyajikan visualisasi data penjualan dalam bentuk:
+  - Pie Chart
+  - Line Chart
+  - Bar Chart  
+  berdasarkan kategori, wilayah, segmen, serta tren waktu.
 
-This project is a starting point for a Flutter application.
+  **Manajemen Produk**  
+  Menampilkan daftar produk beserta detail informasinya yang diambil dari API Backend.
 
-A few resources to get you started if this is your first Flutter project:
+  **Transaksi**  
+  Form untuk mencatat transaksi baru secara cepat serta menampilkan riwayat transaksi.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+  **Multi-Theme**  
+  Mendukung pengaturan tema aplikasi menggunakan **Theme Provider**.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Persyaratan Sistem
+
+- Flutter SDK (disarankan versi terbaru)
+- Dart SDK
+- Koneksi internet untuk mengakses API Backend
+
+#### Cara Instalasi
+1. Clone Repository
+```bash
+git clone <url-repository-flutter>
+cd flutter-uas-psm
+
+2. Ambil Dependensi
+flutter pub get
+
+3. Konfigurasi API
+lib/config/api_config.dart
+
+4. Jalankan Aplikasi
+flutter run
+
